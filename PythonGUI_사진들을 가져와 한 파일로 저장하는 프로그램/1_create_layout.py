@@ -2,7 +2,7 @@ import tkinter.ttk as ttk
 from tkinter import *
 
 root=Tk()
-root.title("사진 합치기 프로그램")
+root.title("사진들을 불러와 한 파일로 저장하는 프로그램")
 #파일 프레임(파일추가, 선택,삭제)
 file_frame=Frame(root)
 file_frame.pack(fill="x",padx=5,pady=5)#간격 띄우기
