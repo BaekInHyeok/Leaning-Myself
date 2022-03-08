@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <body>
     <div id="root"></div>
@@ -6,17 +8,27 @@
 <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.production.min.js"></script><!--React Dom 설치 : React element를 HTML로 바꾸는 역할-->
 <script>
     const root=document.getElementById("root")
-    const span=React.createElement("h3",
-    {
-        onMouseEnter:()=>console.log("mouse enter")
-    },
-    "Hello I am a Span")
-    const btn=React.createElement("button",
-    {
-        onClick:()=>console.log("clicked")
-    },
-    "Click me")
-    const container=React.createElement("div",null,[span,btn])
+    const h3=React.createElement(
+        "h3",
+        {
+            id:"title",
+            onMouseEnter:()=>console.log("mouse enter"),
+        },
+        "Hello I'm a Title"
+        )
+
+    const btn=React.createElement(
+        "button",
+        {
+            onClick:()=>console.log("clicked"),
+            style:{
+                backgroundColor:"tomato",
+            },
+        },
+        "Click me"
+        )
+
+    const container=React.createElement("div",null,[h3,btn])
     ReactDOM.render(container,root)
 </script>
-</html>
+</html> 
