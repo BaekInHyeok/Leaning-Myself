@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<body>
+    <div id="root"></div>
+</body>
+
+<script src="https://unpkg.com/react@17.0.2/umd/react.production.min.js"></script><!--React JS 설치-->
+<script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.production.min.js"></script><!--React Dom 설치 : React element를 HTML로 바꾸는 역할-->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script type="text/babel">
+    const root=document.getElementById("root")
+    
+    function App(){
+        const [counter,setCounter]=React.useState(0)//내부 형태 [undefined,f] 내부에 초기값을 줄 수 있음 -> [0,f]
+        const onClick=()=>{
+            //setCounter(counter)
+            //state를 바탕으로 다음 state를 계산해내고 싶다면 아래와 같이 함수를 사용하는 것이 안정적이다.(React에서 current값을 보장해주고 있으므로)
+            setCounter((current)=>current+1)
+        }
+        return(
+            <div>
+                <h3>Total Clicks : {counter}</h3>
+                <button onClick={onClick}>Click me</button>
+            </div>
+            )
+        }
+        ReactDOM.render(<App />,root)//Container 컴포넌트를 root에 넣어준다.
+</script>
+</html>
