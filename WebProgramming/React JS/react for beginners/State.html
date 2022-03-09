@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<body>
+    <div id="root"></div>
+</body>
+
+<script src="https://unpkg.com/react@17.0.2/umd/react.production.min.js"></script><!--React JS 설치-->
+<script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.production.min.js"></script><!--React Dom 설치 : React element를 HTML로 바꾸는 역할-->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script type="text/babel">
+    const root=document.getElementById("root")
+    let counter=0
+
+    //랜더링 함수
+    function render(){
+        ReactDOM.render(<Container />,root)//Container 컴포넌트를 root에 넣어준다.
+    }
+
+    //카운트업 함수(버튼 클릭시 1 증가)
+    function countUp(){
+        counter=counter+1
+        render()
+    }
+
+    /*컴포넌트*/
+    const Container= () =>(
+        <div>
+            <h3>Total Clicks : {counter}</h3>
+            <button onClick={countUp}>Click me</button>
+        </div>
+    )
+    /*
+    다음과 같이도 표현 가능
+    function Container(){
+        return(
+            <div>
+                <h3>Total Clicks : {counter}</h3>
+                <button onClick={countUp}>Click me</button>
+            </div>
+            )
+        }
+    */
+    render()
+</script>
+</html>
