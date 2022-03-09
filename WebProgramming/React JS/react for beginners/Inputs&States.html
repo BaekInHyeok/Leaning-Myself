@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<body>
+    <div id="root"></div>
+</body>
+
+<script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script><!--React JS 설치-->
+<script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script><!--React Dom 설치 : React element를 HTML로 바꾸는 역할-->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+    function App(){
+        const [minutes,setMinutes]=React.useState();
+        const onChange=(event)=>{
+            setMinutes(event.target.value);
+            console.log(event.target.value)
+        };
+        return(
+            <div>
+                <h1 className="hi">Super Converter</h1>
+
+                <label htmlFor="minutes">Minutes</label>
+                <input 
+                    value={minutes} 
+                    id="minutes" 
+                    placeholder="Minutes" 
+                    type="number"
+                    onChange={onChange}
+                />
+                <h4>You want to convert {minutes}</h4>
+
+                <label htmlFor="hours">Hours</label>
+                <input 
+                    id="hours"
+                    placeholder="Hours"
+                    type="number"
+                />
+            </div>
+            );
+        }
+
+        const root=document.getElementById("root");
+        ReactDOM.render(<App />,root)//Container 컴포넌트를 root에 넣어준다.
+</script>
+</html>
