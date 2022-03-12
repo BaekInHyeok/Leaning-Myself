@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+
+<body>
+    <div id="root"></div>
+</body>
+
+<script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script><!--React JS 설치-->
+<script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script><!--React Dom 설치 : React element를 HTML로 바꾸는 역할-->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+    
+    function MinutesToHours(){
+        //Hours, Minutes에 들어가는 값을 설정하는 컴포넌트
+        const [amount,setAmount]=React.useState(0);
+
+        //invert 컴포넌트. false 상태로 설정해둔다.
+        const [invertd,setInverted]=React.useState(false)
+
+        //input에 입력한 값을 전달하는 함수
+        const onChange=(event)=>{
+            setAmount(event.target.value);//amount에 해당 데이터 저장
+        };
+        
+        //Reset 버튼에 대한 함수
+        const reset=()=>setAmount(0)
+
+        //Invert 버튼에 대한 함수
+        const onInvert=()=>{
+            reset()
+            setInverted((current)=>!current)//invertd가 false면 true로, true면 false로 변환됨
+        } 
+
+        return(
+            <div>
+                <div>
+                    <label htmlFor="minutes">Minutes</label>
+                    <input 
+                        value={invertd ? amount*60 : amount} 
+                        id="minutes" 
+                        placeholder="Minutes"//input이 비어있을 때 안에 설명을 넣어줌
+                        type="number"
+                        onChange={onChange}
+                        disabled={invertd}//inverted가 true면 Minutes에 접근 불가. false면 접근가능
+                        //disabled={invertd === true}
+                    />
+                </div>
+
+                <div>
+                    <label htmlFor="hours">Hours</label>
+                    <input 
+                        value={invertd ? amount : Math.floor(amount/60)}//invertd 상태면 값을 그대로 보여줌. invertd 상태가 아니면 변환된 값으로 보여줌 
+                        id="hours"
+                        placeholder="Hours"
+                        type="number"
+                        onChange={onChange}
+                        disabled={!invertd}//invertd false면 Hours에 접근 불가. true면 접근가능
+                        //disabled={invertd === false}
+                    />
+                </div>
+
+                <button onClick={reset}>Reset</button>
+                <button onClick={onInvert}>{invertd ? "Turn Back" : "Invert"}</button>
+            </div>
+        );
+    };
+
+    function KmToMiles(){
+        //Hours, Minutes에 들어가는 값을 설정하는 컴포넌트
+        const [amount,setAmount]=React.useState(0);
+
+        //invert 컴포넌트. false 상태로 설정해둔다.
+        const [invertd,setInverted]=React.useState(false)
+
+        //input에 입력한 값을 전달하는 함수
+        const onChange=(event)=>{
+            setAmount(event.target.value);//amount에 해당 데이터 저장
+        };
+        
+        //Reset 버튼에 대한 함수
+        const reset=()=>setAmount(0)
+
+        //Invert 버튼에 대한 함수
+        const onInvert=()=>{
+            reset()
+            setInverted((current)=>!current)//invertd가 false면 true로, true면 false로 변환됨
+        }
+
+        return(
+            <div>
+                <div>
+                    <label htmlFor="Km">Km</label>
+                    <input 
+                        value={invertd ? amount/0.6 : amount} 
+                        id="Km" 
+                        placeholder="Km" 
+                        type="number"
+                        onChange={onChange}
+                        disabled={invertd}//inverted가 true면 Minutes에 접근 불가. false면 접근가능
+                        //disabled={invertd === true}
+                    />
+                </div>
+
+                <div>
+                    <label htmlFor="Miles">Miles</label>
+                    <input 
+                        value={invertd ? amount : amount*0.6}//invertd 상태면 값을 그대로 보여줌. invertd 상태가 아니면 변환된 값으로 보여줌 
+                        id="Miles"
+                        placeholder="Miles"
+                        type="number"
+                        onChange={onChange}
+                        disabled={!invertd}//invertd false면 Hours에 접근 불가. true면 접근가능
+                        //disabled={invertd === false}
+                    />
+                </div>
+
+                <button onClick={reset}>Reset</button>
+                <button onClick={onInvert}>{invertd ? "Turn Back" : "Invert"}</button>
+            </div>
+        );
+    };
+    
+    function App(){
+        const [index,setIndex]=React.useState("XX")
+        const onSelect=(event)=>{
+            setIndex(event.target.value)
+        }
+        return(
+            <div>
+                <h1 className="hi">Super Converter</h1>
+                <select value={index} onChange={onSelect}>
+                    <option value="XX">Select Which You Want</option>
+                    <option value="0">Minutes & Hours</option>
+                    <option value="1">Km & Miles</option>
+                </select>
+                <hr />
+                {index === "XX" ? "Select Options" : null}
+                {index === "0" ? <MinutesToHours /> : null}
+                {index === "1" ? <KmToMiles /> : null}
+            </div>
+        );
+    };
+
+    const root=document.getElementById("root");
+    ReactDOM.render(<App />,root)//Container 컴포넌트를 root에 넣어준다.
+</script>
+</html>
