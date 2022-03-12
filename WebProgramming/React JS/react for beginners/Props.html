@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<body>
+    <div id="root"></div>
+</body>
+
+<script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script><!--React JS 설치-->
+<script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script><!--React Dom 설치 : React element를 HTML로 바꾸는 역할-->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+    function Btn({text,big}){
+        console.log(text)
+        console.log(big)
+        return <button style={{
+            backgroundColor : "tomato",
+            color:"white",
+            padding:"10px 20px",
+            border:0,
+            borderRadius:10,
+            fontSize: big ? 20 : 10,
+        }}>
+            {text}
+        </button>
+    }
+    
+    function App(){
+        
+        return(
+            <div>
+                <Btn text="Save Changes" big={true} />
+                <Btn text="Continue" big={false} />
+            </div>
+        )
+    };
+
+    const root=document.getElementById("root");
+    ReactDOM.render(<App />,root)//Container 컴포넌트를 root에 넣어준다.
+</script>
+</html>

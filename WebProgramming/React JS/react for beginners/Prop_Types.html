@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<body>
+    <div id="root"></div>
+</body>
+
+<script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script><!--React JS 설치-->
+<script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script><!--React Dom 설치 : React element를 HTML로 바꾸는 역할-->
+<script src="https://unpkg.com/prop-types@15.7.2/prop-types.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+    function Btn({text,fontSize=14}){//여기서 디폴트값을 줄 수도 있음
+        console.log(text)
+        console.log(big)
+        return <button style={{
+            backgroundColor : "tomato",
+            color:"white",
+            padding:"10px 20px",
+            border:0,
+            borderRadius:10,
+            fontSize
+        }}>
+            {text}
+        </button>
+    }
+    Btn.propTypes={
+        text:PropTypes.string,
+        fontSize:propTypes.number.isRequired,//해당 요소가 반드시 포함되어있어야 한다
+    }
+    function App(){
+        
+        return(
+            <div>
+                <Btn text="Save Changes" fontSize={18} />
+                <Btn fontSize={14} text={"Continue"} />
+            </div>
+        )
+    };
+
+    const root=document.getElementById("root");
+    ReactDOM.render(<App />,root)//Container 컴포넌트를 root에 넣어준다.
+</script>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<body>
+    <div id="root"></div>
+</body>
+
+<script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script><!--React JS 설치-->
+<script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script><!--React Dom 설치 : React element를 HTML로 바꾸는 역할-->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+    function Btn({text, ChangeValue}){
+        return(
+            <button
+                onClick={ChangeValue}
+                style={{
+                    backgroundColor : "tomato",
+                    color:"white",
+                    padding:"10px 20px",
+                    border:0,
+                    borderRadius:10,
+                }}
+            >  
+                {text}
+            </button>
+        );
+    }
+    
+    /*memo를 이용하면 props가 변경되지 않은 경우에는 새로 렌더링을 하지 않게 할 수 있다.
+    -> 하지 않으면 같은 Props를 사용하는 여러 컴포넌트 중 하나만 수정되어도 전체 컴포넌트가 모두 다시 랜더링된다.*/
+    const MemorizedBtn=React.memo(Btn);
+
+    function App(){
+        const [value,setValue]=React.useState("Save Changes")
+        const changeValue=()=>setValue("Revert Changes")
+        return(
+            <div>
+                <MemorizedBtn text={value} ChangeValue={changeValue}/>
+                <MemorizedBtn text="Continue" />
+            </div>
+        )
+    };
+
+    const root=document.getElementById("root");
+    ReactDOM.render(<App />,root)//Container 컴포넌트를 root에 넣어준다.
+</script>
+</html>
