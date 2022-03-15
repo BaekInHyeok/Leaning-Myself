@@ -1,10 +1,15 @@
 import './App.css';
 import { useState,useEffect } from 'react';
 function Hello(){
-  useEffect(()=>{
-    console.log("created!")
-    return()=>console.log("destroyed")//Cleanup function
-  },[])
+  function hiFn(){
+    console.log("hi!")
+    return byeFn
+  }
+  
+  function byeFn(){
+    console.log("bye!")
+  }
+  useEffect(hiFn  ,[])
   return <h1>Hello</h1>
 }
 function App() {
