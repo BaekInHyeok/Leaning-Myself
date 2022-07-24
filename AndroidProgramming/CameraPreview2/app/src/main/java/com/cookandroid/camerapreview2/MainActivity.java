@@ -1,6 +1,7 @@
 package com.cookandroid.camerapreview2;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
@@ -27,36 +28,24 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
-    PreviewView previewView;
-    ImageView imageView;
-
     private static final String[] CAMERA_PERMISSION=new String[]{Manifest.permission.CAMERA};
     private static final int CAMERA_REQUEST_CODE=10;
+
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
 
+    private PreviewView previewView;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button enableCamera=findViewById(R.id.modechange);
-        Button takePicture=findViewById(R.id.takepicture);
-
-        previewView=findViewById(R.id.previewview);
-        imageView=findViewById(R.id.imageview);
+        previewView=findViewById(R.id.previewView);
+        imageView=findViewById(R.id.imageView);
 
         cameraProviderFuture=ProcessCameraProvider.getInstance(this);
-
-        /*enableCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(hasCameraPermission()){
-                }else{
-                    requestPermission();
-                }
-            }
-        });*/
+        Button enableCamera= findViewById(R.id.enableCamera);
 
         enableCamera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 previewView.setVisibility(View.VISIBLE);
             }
         });
+
 
         cameraProviderFuture.addListener(new Runnable() {
             @Override

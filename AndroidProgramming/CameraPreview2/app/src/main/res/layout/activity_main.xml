@@ -16,40 +16,30 @@
             android:layout_height="500dp"
             android:layout_gravity="center"
             >
-
             <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/imageview"
-                android:visibility="visible"
-                android:src="@mipmap/ic_launcher"/>
+                android:layout_width="300dp"
+                android:layout_height="500dp"
+                android:src="@mipmap/ic_launcher"
+                android:id="@+id/imageView"
+                android:visibility="visible"/>
 
             <androidx.camera.view.PreviewView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/previewview"
+                android:layout_width="300dp"
+                android:layout_height="500dp"
+                android:id="@+id/previewView"
                 android:visibility="invisible"/>
-
-
 
         </FrameLayout>
 
-
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
+            android:layout_height="wrap_content">
+
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/modechange"
-                android:text="촬영 모드"/>
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="100dp"
-                android:id="@+id/takepicture"
-                android:text="사진 촬영"/>
+                android:id="@+id/enableCamera"
+                android:text="권한허용"/>
 
         </RelativeLayout>
     </LinearLayout>
