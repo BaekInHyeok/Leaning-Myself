@@ -14,24 +14,26 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.AspectRatio;
 import androidx.camera.core.CameraSelector;
-import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
     PreviewView previewView;
     Button startButton;
     Button stopButton;
+    Button captureButton;
     ImageView imageView;
     String TAG = "MainActivity";
     ProcessCameraProvider processCameraProvider;
     //int lensFacing = CameraSelector.LENS_FACING_FRONT;
     int lensFacing = CameraSelector.LENS_FACING_BACK;
+    ImageCapture imageCapture;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         previewView = findViewById(R.id.previewView);
         startButton = findViewById(R.id.startButton);
         stopButton = findViewById(R.id.stopButton);
+        captureButton = findViewById(R.id.captureButton);
         imageView = findViewById(R.id.imageView);
 
         ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, 1);
@@ -60,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                     bindPreview();
-                    bindImageAnalysis();
+                    bindImageCapture();
                 }
             }
         });
@@ -69,6 +72,39 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 processCameraProvider.unbindAll();
+            }
+        });
+
+        captureButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageCapture.takePicture(ContextCompat.getMainExecutor(MainActivity.this),
+                        new ImageCapture.OnImageCapturedCallback() {
+                            @Override
+                            public void onCaptureSuccess(@NonNull ImageProxy image) {
+
+                                @SuppressLint("UnsafeExperimentalUsageError")
+                                Image mediaImage = image.getImage();
+                                Bitmap bitmap = ImageUtil.mediaImageToBitmap(mediaImage);
+
+
+                                Log.d("MainActivity", Integer.toString(bitmap.getWidth())); //4128
+                                Log.d("MainActivity", Integer.toString(bitmap.getHeight())); //3096
+
+                                //imageView.setImageBitmap(bitmap);
+                                Bitmap rotatedBitmap = ImageUtil.rotateBitmap(bitmap, image.getImageInfo().getRotationDegrees());
+
+                                Log.d("MainActivity", Integer.toString(rotatedBitmap.getWidth())); //3096
+                                Log.d("MainActivity", Integer.toString(rotatedBitmap.getHeight())); //4128
+                                Log.d("MainAtivity", Integer.toString(image.getImageInfo().getRotationDegrees()));
+                                //90 //0, 90, 180, 90 //이미지를 바르게 하기위해 시계 방향으로 회전해야할 각도
+
+                                imageView.setImageBitmap(rotatedBitmap);
+
+                                super.onCaptureSuccess(image);
+                            }
+                        }
+                );
             }
         });
     }
@@ -86,53 +122,14 @@ public class MainActivity extends AppCompatActivity {
         processCameraProvider.bindToLifecycle(this, cameraSelector, preview);
     }
 
-    void bindImageAnalysis() {
+    void bindImageCapture() {
         CameraSelector cameraSelector = new CameraSelector.Builder()
                 .requireLensFacing(lensFacing)
                 .build();
-        ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
+        imageCapture = new ImageCapture.Builder()
                 .build();
-        imageAnalysis.setAnalyzer(Executors.newSingleThreadExecutor(),
-                new ImageAnalysis.Analyzer() {
-                    @Override
-                    public void analyze(@NonNull ImageProxy image) {
-                        /*
-                        @SuppressLint("UnsafeExperimentalUsageError")
-                        Image mediaImage = image.getImage();
-                        */
-                        ///*
-                        @SuppressLint("UnsafeExperimentalUsageError")
-                        Image mediaImage = image.getImage();
-                        Bitmap bitmap = ImageUtil.mediaImageToBitmap(mediaImage);
-                        //*/
-                        /*
-                        @SuppressLint("UnsafeExperimentalUsageError")
-                        Image mediaImage = image.getImage();
-                        byte[] byteArray = ImageUtil.mediaImageToByteArray(mediaImage);
-                        */
-                        /*
-                        @SuppressLint("UnsafeExperimentalUsageError")
-                        Image mediaImage = image.getImage();
-                        ByteBuffer byteBuffer = ImageUtil.mediaImageToByteBuffer(mediaImage);
-                        */
 
-                        int rotationDegrees = image.getImageInfo().getRotationDegrees();
-                        Log.d(TAG, Float.toString(rotationDegrees)); //90 //0, 90, 180, 90 //이미지를 바르게 하기위해 시계 방향으로 회전해야할 각도
-                        final Bitmap finalBitmap = ImageUtil.rotateBitmap(bitmap, rotationDegrees);
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                imageView.setImageBitmap(finalBitmap);
-                            }
-                        });
-
-                        image.close();
-                    }
-                }
-        );
-
-        processCameraProvider.bindToLifecycle(this, cameraSelector, imageAnalysis);
+        processCameraProvider.bindToLifecycle(this, cameraSelector, imageCapture);
     }
 
     @Override
