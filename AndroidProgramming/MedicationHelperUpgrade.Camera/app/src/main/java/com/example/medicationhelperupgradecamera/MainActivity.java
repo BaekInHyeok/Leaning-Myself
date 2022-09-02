@@ -2,13 +2,17 @@ package com.example.medicationhelperupgradecamera;
 
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.icu.util.Output;
 import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,14 +25,33 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import com.googlecode.tesseract.android.TessBaseAPI;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
+
+    Bitmap bitmap;
+    Bitmap rotatedBitmap;
+    String datapath="";
+    private TessBaseAPI mTess;//Tess API Reference
+
     PreviewView previewView;
     Button startButton;
     Button stopButton;
     Button captureButton;
     ImageView imageView;
+
+    Button ocrButton;
+    TextView textView;
+
     String TAG = "MainActivity";
     ProcessCameraProvider processCameraProvider;
     //int lensFacing = CameraSelector.LENS_FACING_FRONT;
@@ -45,6 +68,23 @@ public class MainActivity extends AppCompatActivity {
         stopButton = findViewById(R.id.stopButton);
         captureButton = findViewById(R.id.captureButton);
         imageView = findViewById(R.id.imageView);
+        textView=(TextView) findViewById(R.id.textView);
+        ocrButton=findViewById(R.id.ocrButton);
+
+        //언어 파일 경로 설정
+        datapath=getFilesDir()+"/tessaract/";
+
+        //언어 파일 존재 여부 확인
+        checkFile(new File(datapath+"tessdata/"),"eng");
+
+        String lang="eng";
+
+        mTess=new TessBaseAPI();//TessBaseAPI 생성
+        mTess.init(datapath,lang);//초기화
+
+        //숫자만 인식해서 추출하도록 블랙리스트, 화이트리스트 설정
+        mTess.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, ".,!?@#$%&*()<>_-+=/:;'\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+        mTess.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789");
 
         ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, 1);
 
@@ -85,14 +125,14 @@ public class MainActivity extends AppCompatActivity {
 
                                 @SuppressLint("UnsafeExperimentalUsageError")
                                 Image mediaImage = image.getImage();
-                                Bitmap bitmap = ImageUtil.mediaImageToBitmap(mediaImage);
+                                bitmap = ImageUtil.mediaImageToBitmap(mediaImage);
 
 
                                 Log.d("MainActivity", Integer.toString(bitmap.getWidth())); //4128
                                 Log.d("MainActivity", Integer.toString(bitmap.getHeight())); //3096
 
                                 //imageView.setImageBitmap(bitmap);
-                                Bitmap rotatedBitmap = ImageUtil.rotateBitmap(bitmap, image.getImageInfo().getRotationDegrees());
+                                rotatedBitmap = ImageUtil.rotateBitmap(bitmap, image.getImageInfo().getRotationDegrees());
 
                                 Log.d("MainActivity", Integer.toString(rotatedBitmap.getWidth())); //3096
                                 Log.d("MainActivity", Integer.toString(rotatedBitmap.getHeight())); //4128
@@ -105,6 +145,20 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                 );
+                previewView.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        ocrButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String OCRresult=null;
+                mTess.setImage(rotatedBitmap);
+
+                OCRresult=mTess.getUTF8Text();
+
+                textView.setText(OCRresult);
             }
         });
     }
@@ -136,5 +190,47 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         processCameraProvider.unbindAll();
+    }
+
+    private void copyFiles(String lang){
+        try{
+            String filepath=datapath+"/tessdata/"+lang+".traineddata";
+
+            AssetManager assetManager=getAssets();
+
+            InputStream inputStream=assetManager.open("tessdata/"+lang+".traineddata");
+            OutputStream outputStream=new FileOutputStream(filepath);
+
+            byte[] buffer=new byte[1024];
+            int read;
+
+            while((read=inputStream.read(buffer))!=-1){
+                outputStream.write(buffer,0,read);
+            }
+            outputStream.flush();
+            outputStream.close();
+            inputStream.close();
+        }catch (FileNotFoundException e){
+            e.printStackTrace();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void checkFile(File dir, String lang){
+        if(!dir.exists()&&dir.mkdirs()){
+            copyFiles(lang);
+        }
+
+        if(dir.exists()){
+            copyFiles(lang);
+        }
+        if(dir.exists()){
+            String datafilepath=datapath+"/tessdata/"+lang+".traineddata";
+            File datafile=new File(datafilepath);
+            if(!datafile.exists()){
+                copyFiles(lang);
+            }
+        }
     }
 }
