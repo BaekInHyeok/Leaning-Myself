@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     Button stopButton;
     Button captureButton;
     ImageView imageView;
+    TextView infotext;
+    TextView helptext;
 
     Button ocrButton;
     TextView textView;
@@ -67,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
         startButton = findViewById(R.id.startButton);
         stopButton = findViewById(R.id.stopButton);
         captureButton = findViewById(R.id.captureButton);
+        infotext=findViewById(R.id.info);
+        helptext=findViewById(R.id.helptext);
+
         imageView = findViewById(R.id.imageView);
         textView=(TextView) findViewById(R.id.textView);
         ocrButton=findViewById(R.id.ocrButton);
@@ -102,6 +107,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                    previewView.setVisibility(View.VISIBLE);
+                    infotext.setVisibility(View.INVISIBLE);
+
                     bindPreview();
                     bindImageCapture();
                 }
@@ -118,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         captureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                helptext.setText("사진 촬영을 시작합니다.\n완료될 때 까지 움직이지 마세요");
                 imageCapture.takePicture(ContextCompat.getMainExecutor(MainActivity.this),
                         new ImageCapture.OnImageCapturedCallback() {
                             @Override
@@ -140,12 +149,15 @@ public class MainActivity extends AppCompatActivity {
                                 //90 //0, 90, 180, 90 //이미지를 바르게 하기위해 시계 방향으로 회전해야할 각도
 
                                 imageView.setImageBitmap(rotatedBitmap);
+                                previewView.setVisibility(View.INVISIBLE);
+                                imageView.setVisibility(View.VISIBLE);
+                                helptext.setText("촬영이 완료되었습니다.");
 
                                 super.onCaptureSuccess(image);
                             }
                         }
                 );
-                previewView.setVisibility(View.INVISIBLE);
+
             }
         });
 

@@ -21,15 +21,32 @@
                 android:id="@+id/previewView"
                 android:layout_width="300dp"
                 android:layout_height="300dp"
-                android:visibility="visible"/>
+                android:visibility="invisible"/>
 
             <ImageView
                 android:layout_width="300dp"
                 android:layout_height="300dp"
                 android:id="@+id/imageView"
-                android:visibility="visible"/>
+                android:visibility="invisible"/>
+
+            <TextView
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:id="@+id/info"
+                android:visibility="visible"
+                android:gravity="center"
+                android:text="사진촬영을\n 하시겠습니까?"
+                android:textAlignment="center"
+                android:textSize="40dp"/>
         </FrameLayout>
 
+        <TextView
+            android:id="@+id/helptext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:text="찍을 위치에 카메라를 위치시켜주세요"
+            android:textSize="20dp"></TextView>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
