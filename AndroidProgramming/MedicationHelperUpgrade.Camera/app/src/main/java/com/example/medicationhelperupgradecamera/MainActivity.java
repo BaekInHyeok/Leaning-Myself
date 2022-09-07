@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.AspectRatio;
 import androidx.camera.core.CameraSelector;
@@ -154,6 +155,17 @@ public class MainActivity extends AppCompatActivity {
                                 helptext.setText("촬영이 완료되었습니다.");
 
                                 super.onCaptureSuccess(image);
+
+                                ImageView capturedimage=new ImageView(MainActivity.this);
+                                capturedimage.setImageBitmap(rotatedBitmap);
+
+                                //사진 촬영 결과를 AlertDialog로 띄운다.
+                                AlertDialog.Builder captureComplete = new AlertDialog.Builder(MainActivity.this)
+                                        .setTitle("사진")
+                                        .setMessage("다음 사진을 사용할까요?")
+                                        .setView(capturedimage);
+
+                                captureComplete.create().show();
                             }
                         }
                 );
@@ -165,12 +177,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                String OCRresult=null;
+                String OCResult=null;
                 mTess.setImage(rotatedBitmap);
 
-                OCRresult=mTess.getUTF8Text();
+                OCResult=mTess.getUTF8Text();
 
-                textView.setText(OCRresult);
+                textView.setText(OCResult);
             }
         });
     }
