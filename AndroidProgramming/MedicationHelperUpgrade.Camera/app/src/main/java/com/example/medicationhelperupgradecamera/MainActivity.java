@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
                     previewView.setVisibility(View.VISIBLE);
                     infotext.setVisibility(View.INVISIBLE);
 
+                    //프리뷰에 띄움
                     bindPreview();
                     bindImageCapture();
                 }
@@ -156,12 +157,13 @@ public class MainActivity extends AppCompatActivity {
                                 helptext.setText("촬영이 완료되었습니다.");
 
                                 super.onCaptureSuccess(image);
-
-
+                                
                                 int height=rotatedBitmap.getHeight();
                                 int width=rotatedBitmap.getWidth();
 
                                 Bitmap popupbitmapfile=Bitmap.createScaledBitmap(rotatedBitmap,1000,height/(width/1000),true);
+
+                                processCameraProvider.unbindAll();//프리뷰 바인딩 종료
 
                                 ImageView capturedimage=new ImageView(MainActivity.this);
                                 capturedimage.setImageBitmap(popupbitmapfile);
@@ -175,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
 
-                                                processCameraProvider.unbindAll();
 
                                                 String OCResult=null;
                                                 mTess.setImage(rotatedBitmap);
@@ -190,6 +191,8 @@ public class MainActivity extends AppCompatActivity {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 bitmap=null;
+                                                bindPreview();
+                                                bindImageCapture();
                                                 imageView.setVisibility(View.INVISIBLE);
                                                 previewView.setVisibility(View.VISIBLE);
                                             }
