@@ -1,6 +1,7 @@
 package com.example.medicationhelperupgradecamera;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -156,14 +157,45 @@ public class MainActivity extends AppCompatActivity {
 
                                 super.onCaptureSuccess(image);
 
+
+                                int height=rotatedBitmap.getHeight();
+                                int width=rotatedBitmap.getWidth();
+
+                                Bitmap popupbitmapfile=Bitmap.createScaledBitmap(rotatedBitmap,1000,height/(width/1000),true);
+
                                 ImageView capturedimage=new ImageView(MainActivity.this);
-                                capturedimage.setImageBitmap(rotatedBitmap);
+                                capturedimage.setImageBitmap(popupbitmapfile);
 
                                 //사진 촬영 결과를 AlertDialog로 띄운다.
                                 AlertDialog.Builder captureComplete = new AlertDialog.Builder(MainActivity.this)
                                         .setTitle("사진")
                                         .setMessage("다음 사진을 사용할까요?")
-                                        .setView(capturedimage);
+                                        .setView(capturedimage)
+                                        .setPositiveButton("사용", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+
+                                                processCameraProvider.unbindAll();
+
+                                                String OCResult=null;
+                                                mTess.setImage(rotatedBitmap);
+
+                                                OCResult=mTess.getUTF8Text();
+
+                                                textView.setText(OCResult);
+
+                                            }
+                                        })
+                                        .setNegativeButton("재촬영", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                bitmap=null;
+                                                imageView.setVisibility(View.INVISIBLE);
+                                                previewView.setVisibility(View.VISIBLE);
+                                            }
+                                        });
+
+                                captureComplete.setCancelable(false);
 
                                 captureComplete.create().show();
                             }
