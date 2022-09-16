@@ -78,7 +78,40 @@ public class MainActivity extends AppCompatActivity implements MapView.CurrentLo
             checkRunTimePermission();
         }
 
+        searchButton=(Button)findViewById(R.id.findHospital);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                String location=locaEdittext.getText().toString();
+                String subLocation=sublocaEdittext.getText().toString();
+                String dep=depSpinner.getSelectedItem().toString();
+                String depCode;
+                if(dep.equals("내과")){
+                    depCode="D001";
+                }else if(dep.equals("피부과")){
+                    depCode="D005";
+                }else if(dep.equals("외과")){
+                    depCode="D006";
+                }else if(dep.equals("흉부외과")){
+                    depCode="D007";
+                }else if(dep.equals("정형외과")){
+                    depCode="D008";
+                }else if(dep.equals("안과")){
+                    depCode="D012";
+                }else if(dep.equals("이비인후과")){
+                    depCode="D013";
+                }else if(dep.equals("비뇨기과")){
+                    depCode="D014";
+                }else if(dep.equals("재활의학과")){
+                    depCode="D016";
+                }else if(dep.equals("응급의학과")){
+                    depCode="D024";
+                }else if(dep.equals("치과")){
+                    depCode="D026";
+                }
+            }
+        });
 
 
     }

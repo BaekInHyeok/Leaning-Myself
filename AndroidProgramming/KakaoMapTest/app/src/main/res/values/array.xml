@@ -2,8 +2,6 @@
 <resources>
     <string-array name="dep_array">
         <item>내과</item>
-        <item>신경과</item>
-        <item>정신건강의학과</item>
         <item>피부과</item>
         <item>외과</item>
         <item>흉부외과</item>
