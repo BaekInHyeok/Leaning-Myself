@@ -25,19 +25,51 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
 import net.daum.mf.map.api.MapView;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements MapView.CurrentLocationEventListener, MapView.MapViewEventListener{
 
+    class xmlData{
+        String loc;
+        String subloc;
+        String departure;
+    }
+
+    class xmlResult{
+        String address;
+        String name;
+        String latitude;
+        String longitude;
+    }
+
+    class mapPointData{
+        String mapAddress;
+        String mapName;
+        double mapLatitude;
+        double mapLongitude;
+    }
+
+    xmlData xmldata=new xmlData();
+    //xmlResult xmlresult=new xmlResult();
+
     private static final String LOG_TAG = "MainActivity";
-    private MapView mapView;
+    MapView mapView;
     private ViewGroup mapViewContainer;
 
     EditText locaEdittext;
@@ -110,10 +142,23 @@ public class MainActivity extends AppCompatActivity implements MapView.CurrentLo
                 }else if(dep.equals("치과")){
                     depCode="D026";
                 }
+
+                xmldata.loc=location;
+                xmldata.subloc=subLocation;
+                xmldata.departure=dep;
+
+                switch (v.getId()){
+                    case R.id.findHospital:
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                getXmlResult();
+                            }
+                        }).start();
+                        break;
+                }
             }
         });
-
-
     }
 
 
@@ -301,5 +346,89 @@ public class MainActivity extends AppCompatActivity implements MapView.CurrentLo
     @Override
     public void onMapViewMoveFinished(MapView mapView, MapPoint mapPoint) {
 
+    }
+
+    void getXmlResult(){
+        //StringBuffer buffer=new StringBuffer();
+
+        mapPointData mappointdata=new mapPointData();
+
+        String str1=xmldata.loc;
+        String str2=xmldata.subloc;
+        String str3=xmldata.departure;
+
+        String location= URLEncoder.encode(str1);
+        String subLocation=URLEncoder.encode(str2);
+        String departure=str3;
+
+        String queryUrl="http://apis.data.go.kr/B552657/HsptlAsembySearchService/getHsptlMdcncListInfoInqire?serviceKey=RZnyfUGsOhY2tWWUv262AHpeMQYn4Idqd5cgG0rGNHPd648m5j0Pu3eiS3ewN4XhhHT%2FvuliAmF9KLJdzh1TFA%3D%3D&Q0="+location+"&Q1="+subLocation+"&QD="+departure+"&pageNo=1&numOfRows=10";
+        try{
+            URL url = new URL(queryUrl);
+            InputStream inputStream=url.openStream();
+
+            XmlPullParserFactory factory=XmlPullParserFactory.newInstance();
+            XmlPullParser xpp=factory.newPullParser();
+            xpp.setInput(new InputStreamReader(inputStream,"UTF-8"));
+
+            xmlResult xmlresult=new xmlResult();
+            String tag;
+
+            xpp.next();
+            int eventType=xpp.getEventType();
+
+            while(eventType !=XmlPullParser.END_DOCUMENT){
+                switch (eventType){
+                    case XmlPullParser.START_TAG:
+                        tag=xpp.getName();
+
+                        if(tag.equals("item"));
+                        else if(tag.equals("dutyAddr")){
+                            xpp.next();
+                            xmlresult.address=xpp.getText();
+                        }
+                        else if(tag.equals("dutyName")){
+                            xpp.next();
+                            xmlresult.name=xpp.getText();
+                        }
+                        else if(tag.equals("wgs84Lon")){
+                            xpp.next();
+                            xmlresult.latitude=xpp.getText();
+                        }
+                        else if(tag.equals("wgs84Lat")){
+                            xpp.next();
+                            xmlresult.longitude=xpp.getText();
+                        }
+                        break;
+
+                    case XmlPullParser.TEXT:
+                        break;
+                    case XmlPullParser.END_TAG:
+                        tag=xpp.getName();
+
+                        if(tag.equals("item")){
+                            //이 곳에 카카오맵 좌표찍기 구현
+                            mappointdata.mapAddress=xmlresult.address;
+                            mappointdata.mapName=xmlresult.name;
+
+                            String l=xmlresult.latitude;
+                            double loc=Double.parseDouble(l);
+                            String subl=xmlresult.longitude;
+                            double subloc=Double.parseDouble(subl);
+
+                            mappointdata.mapLatitude=loc;
+                            mappointdata.mapLongitude=subloc;
+
+                            MapPOIItem marker=new MapPOIItem();
+                            marker.setMapPoint(MapPoint.mapPointWithGeoCoord(mappointdata.mapLatitude,mappointdata.mapLongitude));
+
+                            mapView.addPOIItem(marker);
+                       }
+                }
+                eventType=xpp.next();
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

@@ -37,7 +37,7 @@
         android:id="@+id/findHospital">
     </Button>
 
-    <net.daum.mf.map.api.MapView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/map_view"/>
